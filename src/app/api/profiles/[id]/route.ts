@@ -1,0 +1,28 @@
+import { NextApiRequest } from "next";
+import mongoose from "mongoose";
+import dbConnect from "@/lib/db";
+import { ApplicantModel } from "@/models/applicant.model";
+
+export async function GET(
+  request: NextApiRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+
+  if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+    return Response.json({ error: "Invalid profile ID" }, { status: 400 });
+  }
+
+  try {
+    await dbConnect();
+    const profile = await ApplicantModel.findById(id);
+
+    if (!profile) {
+      return Response.json({ error: "Profile not found" }, { status: 404 });
+    }
+
+    return Response.json({ success: true, profile }, { status: 200 });
+  } catch (error) {
+    return Response.json({ error: "Internal Server Error" }, { status: 500 });
+  }
+}
