@@ -1,7 +1,8 @@
-import { NextApiRequest } from "next";
-import mongoose from "mongoose";
 import dbConnect from "@/lib/db";
 import { ApplicantModel } from "@/models/applicant.model";
+import mongoose from "mongoose";
+import { NextApiRequest } from "next";
+import { NextResponse } from "next/server";
 
 export async function GET(
   request: NextApiRequest,
@@ -10,7 +11,7 @@ export async function GET(
   const { id } = await params;
 
   if (!id || !mongoose.Types.ObjectId.isValid(id)) {
-    return Response.json({ error: "Invalid profile ID" }, { status: 400 });
+    return NextResponse.json({ error: "Invalid profile ID" }, { status: 400 });
   }
 
   try {
@@ -18,11 +19,11 @@ export async function GET(
     const profile = await ApplicantModel.findById(id);
 
     if (!profile) {
-      return Response.json({ error: "Profile not found" }, { status: 404 });
+      return NextResponse.json({ error: "Profile not found" }, { status: 404 });
     }
 
     if (profile.isUnlocked) {
-      return Response.json(
+      return NextResponse.json(
         { success: true, message: "Profile already unlocked" },
         { status: 200 }
       );
@@ -31,11 +32,14 @@ export async function GET(
     profile.isUnlocked = true;
     await profile.save();
 
-    return Response.json(
+    return NextResponse.json(
       { success: true, message: "Profile unlocked successfully" },
       { status: 200 }
     );
   } catch (error) {
-    return Response.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }

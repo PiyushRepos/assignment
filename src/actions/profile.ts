@@ -33,7 +33,7 @@ export async function getProfile(
 export async function unlockProfile(
   id: string
 ): Promise<{ success: boolean; message: string }> {
-  const res = await axios.get(`/api/unlock/?id=${id}`);
+  const res = await axios.get(`/api/unlock/${id}`);
 
   if (res.status !== 200) {
     throw new Error("Failed to unlock profile");

@@ -22,12 +22,14 @@ interface Props {
 
 export default function UnlockButton({ id, cost }: Props) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const handleProfileUnlock = async () => {
-    console.log("Unlocking profile:", id);
+    setIsLoading(true);
     await unlockProfile(id);
     router.push(`/profiles/${id}`);
+    setIsLoading(false);
   };
 
   return (
@@ -36,7 +38,7 @@ export default function UnlockButton({ id, cost }: Props) {
         <DialogTrigger asChild>
           <Button
             size="sm"
-            className="w-full font-semibold text-sm px-3 text-center"
+            className="w-full font-semibold text-sm px-3 text-center "
           >
             <span className="md:hidden lg:inline">
               <LockKeyhole size={20} />
@@ -79,8 +81,9 @@ export default function UnlockButton({ id, cost }: Props) {
                 Credits Available: <span className="font-bold">200</span>
               </p>
               <Button
+                disabled={isLoading}
                 onClick={() => handleProfileUnlock()}
-                className="w-full text-sm bg-amber-700/80 hover:bg-amber-700/90 text-white font-bold"
+                className="w-full text-sm bg-amber-700/80 hover:bg-amber-700/90 disabled:opacity-50 text-white font-bold"
               >
                 <span>Unlock</span>
                 <span>
